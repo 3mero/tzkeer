@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>عداد التذكير</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    #container {
+      text-align: center;
+      position: relative;
+    }
+
+    #counter {
+      font-size: 64px;
+      border-radius: 50%;
+      background-color: #4CAF50;
+      color: white;
+      width: 150px;
+      height: 150px;
+      line-height: 150px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    button {
+      margin: 5px;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+    }
+
+    #edit {
+      background-color: #008CBA;
+      color: white;
+    }
+
+    #saveEdit {
+      background-color: #1E90FF;
+      color: white;
+    }
+
+    #reset {
+      background-color: #FF0000;
+      color: white;
+    }
+
+    #editableText {
+      border: 1px solid #ccc;
+      padding: 15px;
+      min-height: 150px;
+      width: 80%;
+      margin: auto;
+      font-size: 20px;
+      transition: background-color 0.3s;
+    }
+
+    #editableText.editing {
+      background-color: white;
+    }
+
+    #saveCounter {
+      background-color: #006400;
+      color: white;
+      margin: 5px;
+    }
+
+    #increment {
+      background-color: #4CAF50;
+      color: white;
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-60%);
+    }
+
+    #changeColor {
+      background-color: #FFA500;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <p id="counter">0</p>
+    <button id="increment" onclick="incrementCounter()"><b>زيادة العداد</b></button>
+
+    <div id="editableText" contenteditable="false" onmouseover="checkEditingStatus()" onmousedown="checkEditingStatus()">اضغط تعديل النص واضف الاذكار التي تود تكرارها وحفظها . ثم اضغط حفظ التعديل</div>
+    <button id="edit" onclick="enableEditing()">تعديل النص</button>
+    <button id="saveEdit" onclick="saveText()">حفظ التعديل</button>
+    <button id="reset" onclick="resetCounter()">تصفير العداد</button>
+    <button id="saveCounter" onclick="saveCounter()">حفظ العداد</button>
+    <button id="changeColor" onclick="changeTextColor()">تغيير لون النص</button>
+    <p align="center"><b><span style="color: #c0504d;"><i>لا تنسى ذكر الله </i></span><br></b></p>
+  </div>
+
+  <script>
+    let count = localStorage.getItem('counter') || 0;
+    let isEditing = false;
+    let originalText = '';
+    let allowEditing = false;
+
+    document.getElementById('counter').innerText = count;
+
+    function incrementCounter() {
+      count++;
+      document.getElementById('counter').innerText = count;
+    }
+
+    function enableEditing() {
+      const editableText = document.getElementById('editableText');
+
+      if (!isEditing) {
+        originalText = editableText.innerHTML;
+        isEditing = true;
+        allowEditing = true;
+        editableText.contentEditable = 'true';
+        editableText.classList.add('editing');
+        document.getElementById('edit').disabled = true;
+        document.getElementById('saveEdit').disabled = false;
+      }
+    }
+
+    function saveText() {
+      if (allowEditing) {
+        const editableText = document.getElementById('editableText');
+        isEditing = false;
+        allowEditing = false;
+        editableText.contentEditable = 'false';
+        editableText.classList.remove('editing');
+        document.getElementById('edit').disabled = false;
+        document.getElementById('saveEdit').disabled = true;
+
+        localStorage.setItem('editedText', editableText.innerHTML);
+
+        alert('تم حفظ التعديلات بنجاح!');
+      }
+    }
+
+    function resetCounter() {
+      count = 0;
+      document.getElementById('counter').innerText = count;
+      localStorage.setItem('counter', count);
+      alert('تم تصفير العداد بنجاح!');
+    }
+
+    function checkEditingStatus() {
+      if (!allowEditing) {
+        isEditing = false;
+      }
+    }
+
+    function preventEditing() {
+      if (isEditing) {
+        enableEditing();
+      }
+    }
+
+    function saveCounter() {
+      localStorage.setItem('counter', count);
+      alert('تم حفظ العداد بنجاح!');
+    }
+
+    function changeTextColor() {
+      const editableText = document.getElementById('editableText');
+      const randomColor = getRandomColor();
+      editableText.style.color = randomColor;
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    const savedText = localStorage.getItem('editedText');
+    if (savedText) {
+      document.getElementById('editableText').innerHTML = savedText;
+    }
+  </script>
+</body>
+</html>
